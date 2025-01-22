@@ -109,7 +109,7 @@ Once the S3 for Models and Lambda are deployed, the S3 bucket will initially be 
 Note: **The following command will download the SDXL model to your local machine and upload it to S3. Ensure you have enough disk space (20GB). Alternatively, you can upload the model to the corresponding S3 directory using your preferred method.**
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 cd ~/comfyui-on-eks/test/ && bash init_s3_for_models.sh $region
 ```
 
@@ -148,7 +148,7 @@ cd ~/comfyui-on-eks && cdk deploy ComfyuiEcrRepo
 Run the `build_and_push.sh` script on a machine where Docker has been successfully installed.
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 cd ~/comfyui-on-eks/comfyui_image/ && bash build_and_push.sh $region
 ```
 
@@ -163,7 +163,7 @@ For the ComfyUI Docker image, refer to `comfyui-on-eks/comfyui_image/Dockerfile`
 After building the image, execute the following command to ensure the image's architecture is X86, as the GPU instances used in this solution are all based on X86 models.
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 image_name=${ACCOUNT_ID}.dkr.ecr.${region}.amazonaws.com/comfyui-images:latest
 docker image inspect $image_name|grep Architecture
@@ -220,7 +220,7 @@ Execute the following command to deploy the PV and PVC for S3 CSI.
 **Run on Linux**
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i "s/region .*/region $region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
 sed -i "s/bucketName: .*/bucketName: comfyui-outputs-$account-$region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
@@ -232,7 +232,7 @@ kubectl apply -f comfyui-on-eks/manifests/PersistentVolume/
 **Run on MacOS**
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i '' "s/region .*/region $region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
 sed -i '' "s/bucketName: .*/bucketName: comfyui-outputs-$account-$region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
@@ -270,7 +270,7 @@ aws eks list-access-entries --cluster-name Comfyui-Cluster|grep $identity
 Execute the following command to create a role and service account for the S3 CSI driver, enabling it to read and write to S3.
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 account=$(aws sts get-caller-identity --query Account --output text)
 ROLE_NAME=EKS-S3-CSI-DriverRole-$account-$region
 POLICY_ARN=arn:aws:iam::aws:policy/AmazonS3FullAccess
@@ -289,7 +289,7 @@ eksctl create iamserviceaccount \
 Run the following command to install  `aws-mountpoint-s3-csi-driver` Addon
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 account=$(aws sts get-caller-identity --query Account --output text)
 eksctl create addon --name aws-mountpoint-s3-csi-driver --cluster Comfyui-Cluster --service-account-role-arn "arn:aws:iam::${account}:role/EKS-S3-CSI-DriverRole-${account}-${region}" --force
 ```
@@ -303,7 +303,7 @@ Run the following command to replace docker image
 **Run on Linux**
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i "s/image: .*/image: ${account}.dkr.ecr.${region}.amazonaws.com\/comfyui-images:latest/g" comfyui-on-eks/manifests/ComfyUI/comfyui_deployment.yaml
 ```
@@ -311,7 +311,7 @@ sed -i "s/image: .*/image: ${account}.dkr.ecr.${region}.amazonaws.com\/comfyui-i
 **Run on MacOS**
 
 ```shell
-region="us-west-2" # Modify the region to your current region.
+region="us-east-2" # Modify the region to your current region.
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i '' "s/image: .*/image: ${account}.dkr.ecr.${region}.amazonaws.com\/comfyui-images:latest/g" comfyui-on-eks/manifests/ComfyUI/comfyui_deployment.yaml
 ```
@@ -365,7 +365,7 @@ kubectl logs -f $podName
 You may encounter error log like this
 
 ```
-E0718 16:22:59.734961       1 driver.go:96] GRPC error: rpc error: code = Internal desc = Could not mount "comfyui-outputs-123456789012-us-west-2" at "/var/lib/kubelet/pods/5d662061-4f4b-45
+E0718 16:22:59.734961       1 driver.go:96] GRPC error: rpc error: code = Internal desc = Could not mount "comfyui-outputs-123456789012-us-east-2" at "/var/lib/kubelet/pods/5d662061-4f4b-45
 4e-bac1-2a051503c3f4/volumes/kubernetes.io~csi/comfyui-outputs-pv/mount": Could not check if "/var/lib/kubelet/pods/5d662061-4f4b-454e-bac1-2a051503c3f4/volumes/kubernetes.io~csi/comfyui-ou
 tputs-pv/mount" is a mount point: stat /var/lib/kubelet/pods/5d662061-4f4b-454e-bac1-2a051503c3f4/volumes/kubernetes.io~csi/comfyui-outputs-pv/mount: no such file or directory, Failed to re
 ad /host/proc/mounts: open /host/proc/mounts: invalid argument

@@ -118,7 +118,7 @@ S3 for Models 和 Lambda 部署完成后，此时 S3 还是空的，执行以下
 注意：**以下命令会将 SDXL 模型下载到本地并上传到 S3，需要有充足的磁盘空间（20G），你也可以通过自己的方式将模型上传到 S3 对应的目录。**
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 cd ~/comfyui-on-eks/test/ && bash init_s3_for_models.sh $region
 ```
 
@@ -159,7 +159,7 @@ cd ~/comfyui-on-eks && cdk deploy ComfyuiEcrRepo
 在准备阶段部署好 Docker 的机器上运行 `build_and_push.sh` 脚本
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 cd ~/comfyui-on-eks/comfyui_image/ && bash build_and_push.sh $region
 ```
 
@@ -174,7 +174,7 @@ ComfyUI 的 Docker 镜像请参考 `comfyui-on-eks/comfyui_image/Dockerfile`，�
 构建完镜像后，执行以下命令确保镜像的 Architecture 是 X86 架构，因为此方案使用的 GPU 实例均是基于 X86 的机型。
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 image_name=${ACCOUNT_ID}.dkr.ecr.${region}.amazonaws.com/comfyui-images:latest
 docker image inspect $image_name|grep Architecture
@@ -231,7 +231,7 @@ aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAcce
 **Run on Linux**
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i "s/region .*/region $region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
 sed -i "s/bucketName: .*/bucketName: comfyui-outputs-$account-$region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
@@ -243,7 +243,7 @@ kubectl apply -f comfyui-on-eks/manifests/PersistentVolume/
 **Run on MacOS**
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i '' "s/region .*/region $region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
 sed -i '' "s/bucketName: .*/bucketName: comfyui-outputs-$account-$region/g" comfyui-on-eks/manifests/PersistentVolume/sd-outputs-s3.yaml
@@ -283,7 +283,7 @@ aws eks list-access-entries --cluster-name Comfyui-Cluster|grep $identity
 执行以下命令，创建 S3 CSI driver 的 role 和 service account，以允许 S3 CSI driver 对 S3 进行读写。
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 account=$(aws sts get-caller-identity --query Account --output text)
 ROLE_NAME=EKS-S3-CSI-DriverRole-$account-$region
 POLICY_ARN=arn:aws:iam::aws:policy/AmazonS3FullAccess
@@ -302,7 +302,7 @@ eksctl create iamserviceaccount \
 执行以下命令，安装 `aws-mountpoint-s3-csi-driver` Addon
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 account=$(aws sts get-caller-identity --query Account --output text)
 eksctl create addon --name aws-mountpoint-s3-csi-driver --version v1.0.0-eksbuild.1 --cluster Comfyui-Cluster --service-account-role-arn arn:aws:iam::$account:role/EKS-S3-CSI-DriverRole-$account-$region --force
 ```
@@ -316,7 +316,7 @@ eksctl create addon --name aws-mountpoint-s3-csi-driver --version v1.0.0-eksbuil
 **Run on Linux**
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i "s/image: .*/image: ${account}.dkr.ecr.${region}.amazonaws.com\/comfyui-images:latest/g" comfyui-on-eks/manifests/ComfyUI/comfyui_deployment.yaml
 ```
@@ -324,7 +324,7 @@ sed -i "s/image: .*/image: ${account}.dkr.ecr.${region}.amazonaws.com\/comfyui-i
 **Run on MacOS**
 
 ```shell
-region="us-west-2" # 修改 region 为你当前的 region
+region="us-east-2" # 修改 region 为你当前的 region
 account=$(aws sts get-caller-identity --query Account --output text)
 sed -i '' "s/image: .*/image: ${account}.dkr.ecr.${region}.amazonaws.com\/comfyui-images:latest/g" comfyui-on-eks/manifests/ComfyUI/comfyui_deployment.yaml
 ```
@@ -382,7 +382,7 @@ kubectl logs -f $podName
 部署完 comfyui 的 pod 后你可能会遇到下面的报错
 
 ```
-E0718 16:22:59.734961       1 driver.go:96] GRPC error: rpc error: code = Internal desc = Could not mount "comfyui-outputs-123456789012-us-west-2" at "/var/lib/kubelet/pods/5d662061-4f4b-45
+E0718 16:22:59.734961       1 driver.go:96] GRPC error: rpc error: code = Internal desc = Could not mount "comfyui-outputs-123456789012-us-east-2" at "/var/lib/kubelet/pods/5d662061-4f4b-45
 4e-bac1-2a051503c3f4/volumes/kubernetes.io~csi/comfyui-outputs-pv/mount": Could not check if "/var/lib/kubelet/pods/5d662061-4f4b-454e-bac1-2a051503c3f4/volumes/kubernetes.io~csi/comfyui-ou
 tputs-pv/mount" is a mount point: stat /var/lib/kubelet/pods/5d662061-4f4b-454e-bac1-2a051503c3f4/volumes/kubernetes.io~csi/comfyui-outputs-pv/mount: no such file or directory, Failed to re
 ad /host/proc/mounts: open /host/proc/mounts: invalid argument

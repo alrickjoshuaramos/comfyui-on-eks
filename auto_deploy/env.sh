@@ -1,4 +1,4 @@
-export AWS_DEFAULT_REGION="us-west-2"
+export AWS_DEFAULT_REGION="us-east-2"
 export PROJECT_NAME=""
 export project_name=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
 export ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text 2> /dev/null)

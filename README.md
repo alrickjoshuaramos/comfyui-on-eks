@@ -57,7 +57,7 @@ Make sure that you have enough vCPU quota for G instances. (At least 8 vCPU for 
 ```shell
 rm -rf ~/comfyui-on-eks && git clone https://github.com/aws-samples/comfyui-on-eks ~/comfyui-on-eks
 cd ~/comfyui-on-eks && git checkout v0.5.0
-region="us-west-2" # Modify the region to your current region
+region="us-east-2" # Modify the region to your current region
 project="" # [Optional] Default is empty, you can modify the project name to your own
 sed -i "s/export AWS_DEFAULT_REGION=.*/export AWS_DEFAULT_REGION=$region/g" ~/comfyui-on-eks/auto_deploy/env.sh
 sed -i "s/export PROJECT_NAME=.*/export PROJECT_NAME=$project/g" ~/comfyui-on-eks/auto_deploy/env.sh
@@ -97,7 +97,7 @@ Assuming the following scenario:
 * DTO traffic size is approximately 100GB (96GB + HTTP requests)
 * ComfyUI images of different versions total 20GB
 
-The total cost of deploying this solution in us-west-2 is approximately **$441.878 (using CloudFront for external access) or $442.378 (using ALB for external access)**
+The total cost of deploying this solution in us-east-2 is approximately **$441.878 (using CloudFront for external access) or $442.378 (using ALB for external access)**
 
 | Service                                | Pricing | Detail                                                       |
 | -------------------------------------- | ------- | ------------------------------------------------------------ |
